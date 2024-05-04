@@ -1,0 +1,56 @@
+import requests
+url="https://realpython.github.io/fake-jobs/"
+page=requests.get(url)
+#print(page.text)
+
+from bs4 import BeautifulSoup
+url="https://realpython.github.io/fake-jobs/"
+page=requests.get(url)
+#print(page.content)
+soup=BeautifulSoup(page.content,"html.parser")
+results=soup.find(id="ResultsContainer")
+#print(results.prettify())
+job_elements=results.find_all("div",class_="card-content")
+
+python_jobs = results.find_all(
+    "h2", string=lambda text: "python" in text.lower())
+#print(python_jobs)
+python_job_elements = [
+    h2_element.parent.parent.parent for h2_element in python_jobs
+]
+#print(python_job_elements)
+  
+'''
+you’ll see that that’s what you targeted. You filtered for only the <h2> title elements of the job postings that contain the word "python". As you can see, these elements don’t include the rest of the information about the job.
+The error message you received earlier was related to this:
+AttributeError: 'NoneType' object has no attribute 'text'
+You tried to find the job title, the company name, and the job’s location in each element in python_jobs, but each element contains only the job title text.
+'''
+  
+'''
+for jobP in python_jobs:
+    job_title=jobP.find("h2",class_="title is-5")
+    company=jobP.find("h3",class_="subtitle is-6 company")
+    location=jobP.find("p",class_="location")
+    print(job_title.text.strip())
+    print(company.text.strip())
+    print(location.text.strip())
+    print()
+    '''
+  
+'''for job_element in job_elements:
+    #print(job_element,end="\n"*2)
+    job_title=job_element.find("h2",class_="title is-5")
+    company=job_element.find("h3",class_="subtitle is-6 company")
+    location=job_element.find("p",class_="location")
+    print(job_title.text.strip())
+    print(company.text.strip())
+    print(location.text.strip())
+    print()
+  '''
+  
+for job_element in python_job_elements:
+    links = job_element.find_all("a")
+    for link in links:
+        link_url = link["href"]
+        print(f"Apply here: {link_url}\n")
